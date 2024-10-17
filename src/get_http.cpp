@@ -12,8 +12,8 @@
 const char WIFI_SSID[] = "HiPEMs_50 GHz";         // CHANGE IT
 const char WIFI_PASSWORD[] = "12342468"; // CHANGE IT
 
-String HOST_NAME   = "https://openweathermap.org/api"; // CHANGE IT
-String PATH_NAME   = "6d7d4fc3132ad76712e9331a552d2482";      // CHANGE IT
+String HOST_NAME   = "https://openweathermap.org"; // CHANGE IT
+String PATH_NAME   = "/data/2.5/weather?lat=44.34&lon=10.99&appid=e30ed34c68da00b01752892b73d94d6a";      // CHANGE IT
 //String PATH_NAME   = "/products/arduino.php";      // CHANGE IT
 String queryString = "temperature=26&humidity=70";
 
