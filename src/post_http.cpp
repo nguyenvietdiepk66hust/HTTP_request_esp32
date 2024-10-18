@@ -1,7 +1,7 @@
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char* ssid = "VIETTEL";
+const char* ssid = "viettel";
 const char* password = "3ngay0tam";
 
 // Domain Name with full URL Path for HTTP POST Request
@@ -69,4 +69,6 @@ void loop() {
     }
     lastTime = millis();
   }
+  // he vua doi ten tu demo_1 sang http_request_esp32
+
 }
