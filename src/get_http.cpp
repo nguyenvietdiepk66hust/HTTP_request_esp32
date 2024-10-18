@@ -9,7 +9,7 @@ const char* password = "3ngay0tam";
 String openWeatherMapApiKey = "e30ed34c68da00b01752892b73d94d6a";
 // Example:
 //String openWeatherMapApiKey = "bd939aa3d23ff33d3c8f5dd1dd435";
-
+String httpGETRequest(const char* serverName);
 // Replace with your country code and city
 String city = "Porto";
 String countryCode = "PT";
