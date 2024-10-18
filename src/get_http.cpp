@@ -5,12 +5,12 @@
  *
  * For more detail (instruction and wiring diagram), visit https://esp32io.com/tutorials/esp32-http-request
  */
-
+#include<Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
 
-const char WIFI_SSID[] = "HiPEMs_50 GHz";         // CHANGE IT
-const char WIFI_PASSWORD[] = "12342468"; // CHANGE IT
+const char WIFI_SSID[] = "VIETTEL";         // CHANGE IT
+const char WIFI_PASSWORD[] = "3ngay0tam"; // CHANGE IT
 
 String HOST_NAME   = "https://openweathermap.org"; // CHANGE IT
 String PATH_NAME   = "/data/2.5/weather?lat=44.34&lon=10.99&appid=e30ed34c68da00b01752892b73d94d6a";      // CHANGE IT
