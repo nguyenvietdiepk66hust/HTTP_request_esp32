@@ -1,58 +1,103 @@
-/*
- * This ESP32 code is created by esp32io.com
- *
- * This ESP32 code is released in the public domain
- *
- * For more detail (instruction and wiring diagram), visit https://esp32io.com/tutorials/esp32-http-request
- */
-#include<Arduino.h>
 #include <WiFi.h>
 #include <HTTPClient.h>
+#include <Arduino_JSON.h>
+#include<Arduino.h>
+const char* ssid = "VIETTEL";
+const char* password = "3ngay0tam";
 
-const char WIFI_SSID[] = "VIETTEL";         // CHANGE IT
-const char WIFI_PASSWORD[] = "3ngay0tam"; // CHANGE IT
+// Your Domain name with URL path or IP address with path
+String openWeatherMapApiKey = "e30ed34c68da00b01752892b73d94d6a";
+// Example:
+//String openWeatherMapApiKey = "bd939aa3d23ff33d3c8f5dd1dd435";
 
-String HOST_NAME   = "https://openweathermap.org"; // CHANGE IT
-String PATH_NAME   = "/data/2.5/weather?lat=44.34&lon=10.99&appid=e30ed34c68da00b01752892b73d94d6a";      // CHANGE IT
-//String PATH_NAME   = "/products/arduino.php";      // CHANGE IT
-String queryString = "temperature=26&humidity=70";
+// Replace with your country code and city
+String city = "Porto";
+String countryCode = "PT";
+
+// THE DEFAULT TIMER IS SET TO 10 SECONDS FOR TESTING PURPOSES
+// For a final application, check the API call limits per hour/minute to avoid getting blocked/banned
+unsigned long lastTime = 0;
+// Timer set to 10 minutes (600000)
+//unsigned long timerDelay = 600000;
+// Set timer to 10 seconds (10000)
+unsigned long timerDelay = 10000;
+
+String jsonBuffer;
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
-  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  WiFi.begin(ssid, password);
   Serial.println("Connecting");
-  while (WiFi.status() != WL_CONNECTED) {
+  while(WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
   }
   Serial.println("");
   Serial.print("Connected to WiFi network with IP Address: ");
   Serial.println(WiFi.localIP());
-
-  HTTPClient http;
-
-  http.begin(HOST_NAME + PATH_NAME + "?" + queryString);
-  http.addHeader("TEMP&HUM", "application/weather");
-  int httpCode = http.GET();
-
-  // httpCode will be negative on error
-  if (httpCode > 0) {
-    // file found at server
-    if (httpCode == HTTP_CODE_OK) {
-      String payload = http.getString();
-      Serial.println(payload);
-    } else {
-      // HTTP header has been send and Server response header has been handled
-      Serial.printf("[HTTP] GET... code: %d\n", httpCode);
-    }
-  } else {
-    Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
-  }
-
-  http.end();
+ 
+  Serial.println("Timer set to 10 seconds (timerDelay variable), it will take 10 seconds before publishing the first reading.");
 }
 
 void loop() {
+  // Send an HTTP GET request
+  if ((millis() - lastTime) > timerDelay) {
+    // Check WiFi connection status
+    if(WiFi.status()== WL_CONNECTED){
+      String serverPath = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + countryCode + "&APPID=" + openWeatherMapApiKey;
+      
+      jsonBuffer = httpGETRequest(serverPath.c_str());
+      Serial.println(jsonBuffer);
+      JSONVar myObject = JSON.parse(jsonBuffer);
   
+      // JSON.typeof(jsonVar) can be used to get the type of the var
+      if (JSON.typeof(myObject) == "undefined") {
+        Serial.println("Parsing input failed!");
+        return;
+      }
+    
+      Serial.print("JSON object = ");
+      Serial.println(myObject);
+      Serial.print("Temperature: ");
+      Serial.println(myObject["main"]["temp"]);
+      Serial.print("Pressure: ");
+      Serial.println(myObject["main"]["pressure"]);
+      Serial.print("Humidity: ");
+      Serial.println(myObject["main"]["humidity"]);
+      Serial.print("Wind Speed: ");
+      Serial.println(myObject["wind"]["speed"]);
+    }
+    else {
+      Serial.println("WiFi Disconnected");
+    }
+    lastTime = millis();
+  }
+}
+
+String httpGETRequest(const char* serverName) {
+  WiFiClient client;
+  HTTPClient http;
+    
+  // Your Domain name with URL path or IP address with path
+  http.begin(client, serverName);
+  
+  // Send HTTP POST request
+  int httpResponseCode = http.GET();
+  
+  String payload = "{}"; 
+  
+  if (httpResponseCode>0) {
+    Serial.print("HTTP Response code: ");
+    Serial.println(httpResponseCode);
+    payload = http.getString();
+  }
+  else {
+    Serial.print("Error code: ");
+    Serial.println(httpResponseCode);
+  }
+  // Free resources
+  http.end();
+
+  return payload;
 }
